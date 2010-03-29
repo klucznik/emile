@@ -23,6 +23,7 @@
   else if (supportsFilters) {
     setOpacity = function(el, value){
       var es = el.style;
+      if (el.currentStyle && !el.currentStyle.hasLayout) es.zoom = 1;
       if (reOpacity.test(es.filter)) {
         value = value >= 0.9999 ? '' : ('alpha(opacity=' + (value * 100) + ')');
         es.filter = es.filter.replace(reOpacity, value);
