@@ -10,7 +10,9 @@
     'paddingRight paddingTop right textIndent top width wordSpacing zIndex').split(' '),
     supportsOpacity = typeof parseEl.style.opacity == 'string', 
     supportsFilters = typeof parseEl.style.filter == 'string',
-    reOpacity = /alpha\(opacity=([^\)]+)\)/, 
+    view = document.defaultView,
+    supportsGCS = view && typeof view.getComputedStyle !== 'undefined',
+    reOpacity = /alpha\(opacity=([^\)]+)\)/,
     setOpacity = function(){ }, 
     getOpacityFromComputed = function(){ return '1'; };
     
@@ -63,7 +65,7 @@
   container[emile] = function(el, style, opts){
     el = typeof el == 'string' ? document.getElementById(el) : el;
     opts = opts || {};
-    var target = normalize(style), comp = el.currentStyle ? el.currentStyle : getComputedStyle(el, null),
+    var target = normalize(style), comp = supportsGCS ? view.getComputedStyle(el, null) : el.currentStyle,
       prop, current = {}, start = +new Date, dur = opts.duration||200, finish = start+dur, interval,
       easing = opts.easing || function(pos){ return (-Math.cos(pos*Math.PI)/2) + 0.5; }, curValue;
     for(prop in target) current[prop] = parse(prop === 'opacity' ? getOpacityFromComputed(comp) : comp[prop]);
