@@ -12,7 +12,7 @@
     supportsFilters = typeof parseEl.style.filter == 'string',
     view = document.defaultView,
     supportsGCS = view && typeof view.getComputedStyle !== 'undefined',
-    reOpacity = /alpha\(opacity=([^\)]+)\)/,
+    reOpacity = /alpha\s*\(\s*opacity\s*=\s*([^\)]+)\)/,
     setOpacity = function(){ }, 
     getOpacityFromComputed = function(){ return '1'; };
     
