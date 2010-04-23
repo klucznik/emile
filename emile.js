@@ -8,19 +8,17 @@
     'fontWeight height left letterSpacing lineHeight marginBottom marginLeft marginRight marginTop maxHeight '+
     'maxWidth minHeight minWidth opacity outlineColor outlineOffset outlineWidth paddingBottom paddingLeft '+
     'paddingRight paddingTop right textIndent top width wordSpacing zIndex').split(' '),
-    supportsOpacity = typeof parseEl.style.opacity == 'string', 
-    supportsFilters = typeof parseEl.style.filter == 'string',
     view = document.defaultView,
     supportsGCS = view && typeof view.getComputedStyle !== 'undefined',
     reOpacity = /alpha\s*\(\s*opacity\s*=\s*([^\)]+)\)/,
     setOpacity = function(){ }, 
     getOpacityFromComputed = function(){ return '1'; };
     
-  if (supportsOpacity) {
+  if (typeof parseEl.style.opacity == 'string') {
     setOpacity = function(el, value){ el.style.opacity = value; };
     getOpacityFromComputed = function(computed) { return computed.opacity; };
   }
-  else if (supportsFilters) {
+  else if (typeof parseEl.style.filter == 'string') {
     setOpacity = function(el, value){
       var es = el.style;
       if (el.currentStyle && !el.currentStyle.hasLayout) es.zoom = 1;
@@ -28,9 +26,8 @@
         value = value >= 0.9999 ? '' : ('alpha(opacity=' + (value * 100) + ')');
         es.filter = es.filter.replace(reOpacity, value);
       }
-      else {
+      else
         es.filter += ' alpha(opacity=' + (value * 100) + ')';
-      }
     };
     getOpacityFromComputed = function(comp) {
       var m = comp.filter.match(reOpacity);
