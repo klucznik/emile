@@ -69,7 +69,8 @@
       prop, current = {}, start = +new Date, dur = opts.duration||200, finish = start+dur, interval,
       easing = opts.easing || function(pos){ return (-Math.cos(pos*Math.PI)/2) + 0.5; }, curValue;
     for(prop in target) current[prop] = parse(prop === 'opacity' ? getOpacityFromComputed(comp) : comp[prop]);
-    interval = setInterval(function(){
+	if (el.emile) clearInterval(el.emile);
+    el.emile = interval = setInterval(function(){
       var time = +new Date, pos = time>finish ? 1 : (time-start)/dur;
       for(prop in target) {
         curValue = target[prop].f(current[prop].v,target[prop].v,easing(pos)) + target[prop].u;
@@ -79,4 +80,13 @@
       if(time>finish) { clearInterval(interval); opts.after && opts.after(); }
     },10);
   }
+
+	container[emile].stopAnimation = function(el) {
+		el = getElement(el);
+		if (el.emile) {
+			clearInterval(el.emile);
+			delete el.emile;
+		}
+	}
+
 })('emile', this);
