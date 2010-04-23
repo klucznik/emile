@@ -25,7 +25,7 @@ Also see the video of my presentation at Fronteers 2009:
 
 ### Documentation ###
 
-One method:
+Methods:
 
     emile(element, style, options)
 
@@ -39,6 +39,13 @@ One method:
       * after (Function) - a function which will be executed after the animation is finished
       * easing (Function) - easing function for the animation. Receives one argument pos which indicates position in time between animation's start and end
 
+_
+
+    emile.stopAnimation(element)
+
+**Parameters**
+
+   * element (id | element) - element which the animation will be stopped
 
 ### License ###
 
