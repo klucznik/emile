@@ -8,8 +8,7 @@
     'fontWeight height left letterSpacing lineHeight marginBottom marginLeft marginRight marginTop maxHeight '+
     'maxWidth minHeight minWidth opacity outlineColor outlineOffset outlineWidth paddingBottom paddingLeft '+
     'paddingRight paddingTop right textIndent top width wordSpacing zIndex').split(' '),
-    view = document.defaultView,
-    supportsGCS = view && typeof view.getComputedStyle !== 'undefined',
+
     reOpacity = /alpha\s*\(\s*opacity\s*=\s*([^\)]+)\)/,
     setOpacity = function(){ }, 
     getOpacityFromComputed = function(){ return '1'; };
@@ -34,6 +33,9 @@
       return (m ? (m[1] / 100) : 1) + '';
     };
   }
+
+	function getElement(el) { return typeof el == 'string' ? document.getElementById(el) : el; }
+	function computedStyle(el) { return el.currentStyle ? el.currentStyle : window.getComputedStyle(el, null); }
     
   function interpolate(source,target,pos){ return (source+(target-source)*pos).toFixed(3); }
   function s(str, p, c){ return str.substr(p,c||1); }
@@ -61,9 +63,9 @@
   } 
   
   container[emile] = function(el, style, opts){
-    el = typeof el == 'string' ? document.getElementById(el) : el;
+    el = getElement(el);
     opts = opts || {};
-    var target = normalize(style), comp = supportsGCS ? view.getComputedStyle(el, null) : el.currentStyle,
+    var target = normalize(style), comp = computedStyle(el),
       prop, current = {}, start = +new Date, dur = opts.duration||200, finish = start+dur, interval,
       easing = opts.easing || function(pos){ return (-Math.cos(pos*Math.PI)/2) + 0.5; }, curValue;
     for(prop in target) current[prop] = parse(prop === 'opacity' ? getOpacityFromComputed(comp) : comp[prop]);
