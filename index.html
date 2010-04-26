@@ -1,27 +1,65 @@
-<script src="emile.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="emile.js"></script>
+</head>
+<body>	
+	<a href="#" onClick="animate()">Anim!</a>
+	<a href="#" onClick="reset()">Back</a>
+	<br/>
+	<a href="#" onClick="emile.stopAnimation('test1')">Stop1</a>
+	<a href="#" onClick="emile.stopAnimation('test2')">Stop2</a>
+	<a href="#" onClick="emile.stopAnimation('test3')">Stop3</a>
+	<div id="test1" style="position:absolute;left:0px;background:#f00;opacity:1;">test</div>
+	<div id="test2" style="border:0px solid #00ff00;position:absolute;left:0px;top:400px;background:#0f0">test</div>
 
-<div id="test1" style="position:absolute;left:0px;background:#f00;opacity:0">test</div>
-<div id="test2" style="border:0px solid #00ff00;position:absolute;left:0px;top:400px;background:#0f0">test</div>
+	<div id="test3" style="filter: alpha (    opacity 
+	= 20 );
+	opacity:0.2;
+	color:#fff;
+	position:absolute;
+	left:300px;
+	top:100px;
+	width:50px;
+	height:50px;
+	background:purple;">hello world</div>
 
-<script>
-  emile('test2', 'left:300px;padding:10px;border:50px solid #ff0000', {
-    duration: 500,
-    after: function(){
-      emile('test1', 'background:#0f0;left:100px;padding-bottom:100px;opacity:1', { 
-        duration: 4000, easing: bounce
-      });
-    }
-  });
+	<script>
+		function animate() {
+		 	emile('test2', 'left:300px;padding:10px;border:50px solid #ff0000', {
+				duration: 500,
+				after: function(){
+					emile('test1', 'background:#0f0;left:100px;padding-bottom:100px;opacity:0', { duration: 4000, easing: bounce });
+					emile('test3', 'opacity:1', { duration: 1000 });
+				}
+			});
+			return false;
+		}
+	
+		animate();
+	
+		function reset() {
+		 	emile('test2', 'left:0px;padding:0px;border:0px solid #00ff00', {
+				duration: 500,
+				after: function(){
+					emile('test1', 'background:#f00;left:0px;padding-bottom:0px;opacity:1', { duration: 4000, easing: bounce });
+					emile('test3', 'opacity:0.2', { duration: 1000 });
+				}
+			});
+			return false;
+		}	
   
-  function bounce(pos) {
-    if (pos < (1/2.75)) {
-        return (7.5625*pos*pos);
-    } else if (pos < (2/2.75)) {
-        return (7.5625*(pos-=(1.5/2.75))*pos + .75);
-    } else if (pos < (2.5/2.75)) {
-        return (7.5625*(pos-=(2.25/2.75))*pos + .9375);
-    } else {
-        return (7.5625*(pos-=(2.625/2.75))*pos + .984375);
-    }
-  }
-</script>
+	  function bounce(pos) {
+	    if (pos < (1/2.75)) {
+	        return (7.5625*pos*pos);
+	    } else if (pos < (2/2.75)) {
+	        return (7.5625*(pos-=(1.5/2.75))*pos + .75);
+	    } else if (pos < (2.5/2.75)) {
+	        return (7.5625*(pos-=(2.25/2.75))*pos + .9375);
+	    } else {
+	        return (7.5625*(pos-=(2.625/2.75))*pos + .984375);
+	    }
+	  }
+	</script>
+</body>
+</html>
