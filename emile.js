@@ -16,20 +16,19 @@
 	var getOpacityFromComputed = function() { return '1'; };
 
 	if (typeof parseEl.style.opacity == 'string') {
-		setOpacity = function(el, value){ el.style.opacity = value; };
+		setOpacity = function(elem, value){ elem.style.opacity = value; };
 		getOpacityFromComputed = function(computed) { return computed.opacity; };
 	}
 	else if (typeof parseEl.style.filter == 'string') {
-		setOpacity = function(el, value) {
-			var es = el.style;
-			if (el.currentStyle && !el.currentStyle.hasLayout) es.zoom = 1;
+		setOpacity = function(elem, value) {
+			var es = elem.style;
+			if (elem.currentStyle && !elem.currentStyle.hasLayout) es.zoom = 1;
 			if (reOpacity.test(es.filter)) {
 				value = value >= 0.9999 ? '' : ('alpha(opacity=' + (value * 100) + ')');
 				es.filter = es.filter.replace(reOpacity, value);
 			}
-			else {
+			else
 				es.filter += ' alpha(opacity=' + (value * 100) + ')';
-			}
 		};
 
 		getOpacityFromComputed = function(comp) {
@@ -38,16 +37,16 @@
 		};
 	}
 
+	function s(str, p, c) {
+		return str.substr(p, c || 1);
+	}
+
 	function interpolate(source, target, pos) {
 		var objToReturn = source + (target - source) * pos;
 		return isNaN(objToReturn) ? objToReturn : objToReturn.toFixed(3);
 	}
 
-	function s(str, p, c) {
-		return str.substr(p, c || 1);
-	}
-
-	function color(source, target, pos) {
+	function interpolateColor(source, target, pos) {
 		var i = 2, j, c, tmp, v = [], r = [];
 
 		while(j=3, c=arguments[i-1], i--) {
@@ -71,8 +70,13 @@
 	}
 
 	function parse(prop) {
-		var p = parseFloat(prop), q = prop.replace(/^[\-\d\.]+/,'');
-		return isNaN(p) ? { v: q, f: color, u: ''} : { v: p, f: interpolate, u: q };
+		var p = parseFloat(prop);
+		var q = prop.replace(/^[\-\d\.]+/,'');
+
+		if (isNaN(p))
+			return { value: q, func: interpolateColor, unit: ''};
+		else
+			return { value: p, func: interpolate, unit: q };
 	}
 
 	function normalize(style) {
@@ -84,20 +88,20 @@
 		return rules;
 	}
 
-	function getElement(el) {
-		return typeof el == 'string' ? document.getElementById(el) : el;
+	function getElement(elem) {
+		return typeof elem == 'string' ? document.getElementById(elem) : elem;
 	}
 
-	function computedStyle(el) {
-		return el.currentStyle ? el.currentStyle : window.getComputedStyle(el, null);
+	function computedStyle(elem) {
+		return elem.currentStyle ? elem.currentStyle : window.getComputedStyle(elem, null);
 	}
 
-	container[emile] = function(el, style, opts) {
-		el = getElement(el);
+	container[emile] = function(elem, style, opts) {
+		elem = getElement(elem);
 		opts = opts || {};
 
 		var target = normalize(style);
-		var comp = computedStyle(el),
+		var comp = computedStyle(elem),
 		prop,
 		current = {},
 		start = +new Date,
@@ -111,30 +115,30 @@
 			current[prop] = parse(prop === 'opacity' ? getOpacityFromComputed(comp) : comp[prop]);
 
 		//stop previous animation
-		if (el.emile)
-			clearInterval(el.emile);
+		if (elem.emile)
+			clearInterval(elem.emile);
 
-		el.emile = interval = setInterval(function() {
+		elem.emile = interval = setInterval(function() {
 			var time = +new Date,
 			pos = time > finish ? 1 : (time - start) / dur;
 
 			for(prop in target) {
-				curValue = target[prop].f(current[prop].v, target[prop].v, easing(pos)) + target[prop].u;
-				if (prop === 'opacity') setOpacity(el, curValue);
-				else el.style[prop] = curValue;
+				curValue = target[prop].func(current[prop].value, target[prop].value, easing(pos)) + target[prop].unit;
+				if (prop === 'opacity') setOpacity(elem, curValue);
+				else elem.style[prop] = curValue;
 			}
 			if(time > finish) {
-				container[emile].stopAnimation(el);
+				container[emile].stopAnimation(elem);
 				opts.after && opts.after();
 			}
 		}, 10);
 	}
 
-	container[emile].stopAnimation = function(el) {
-		el = getElement(el);
-		if (el.emile) {
-			clearInterval(el.emile);
-			delete el.emile;
+	container[emile].stopAnimation = function(elem) {
+		elem = getElement(elem);
+		if (elem.emile) {
+			clearInterval(elem.emile);
+			elem.emile = null;
 		}
 	}
 
