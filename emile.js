@@ -52,33 +52,20 @@
 
 	//determines color value according to position
 	function interpolateColor(source, target, position) {
-		var i = 2,
-			j,
-			c,
+		var	i=3,
 			tmp,
-			v = [],
-			r = [];
+			values = [];
 
-		while(j=3, c=arguments[i-1], i--) {
-			if(letterAt(c,0)=='r') {
-				c = c.match(/\d+/g);
-				while(j--)
-					v.push(~~c[j]);
-			}
-			else {
-				if(c.length==4)
-					c = '#' + letterAt(c,1) + letterAt(c,1) + letterAt(c,2) + letterAt(c,2) + letterAt(c,3) + letterAt(c,3);
-				while(j--)
-					v.push(parseInt(c.substr(1+j*2, 2), 16));
-			}
+		source = parseColor(source);
+		target = parseColor(target);
+
+		//interpolate and validate each value
+		while(i--) {
+			tmp = ~~(source[i] + (target[i] - source[i]) * position);
+			values.push(tmp < 0 ? 0 : tmp > 255 ? 255 : tmp);
 		}
 
-		while(j--) {
-			tmp = ~~(v[j + 3] + (v[j] - v[j + 3]) * position);
-			r.push(tmp < 0 ? 0 : tmp > 255 ? 255 : tmp);
-		}
-
-		return 'rgb(' + r.join(',') + ')';
+		return 'rgb(' + values.join(',') + ')';
 	}
 
 	//this function decides if property is numerical or color based
@@ -90,6 +77,31 @@
 			return { value: q, func: interpolateColor, unit: ''};
 		else
 			return { value: p, func: interpolateNumber, unit: q };
+	}
+
+	//parse color values to array
+	function parseColor(color) {
+		var values = [],
+			j = 3;
+
+		//rgb format
+		if(letterAt(color,0) == 'r') {
+			color = color.match(/\d+/g);
+			while(j--)
+				values.push(~~color[j]);
+		}
+		//hex format
+		else {
+			//if needed expand short hex (#FFF -> #FFFFFF)
+			if(color.length == 4)
+				color = '#' + letterAt(color,1) + letterAt(color,1) + letterAt(color,2) + letterAt(color,2) + letterAt(color,3) + letterAt(color,3);
+
+			//convert hexadecimal to decimal values
+			while(j--)
+				values.push(parseInt(color.substr(1 + j*2, 2), 16));
+		}
+
+		return values;
 	}
 
 	//parses given css style string to js equivalents using browser engine
