@@ -1,7 +1,7 @@
 // emile.js (c) 2009 Thomas Fuchs
 // Licensed under the terms of the MIT license.
 
-(function(emile, container) {
+(function(functionName, container) {
 
 	var parseEl = document.createElement('div');
 	var props = ('backgroundColor borderBottomColor borderBottomWidth borderLeftColor borderLeftWidth '+
@@ -93,10 +93,10 @@
 	}
 
 	function computedStyle(elem) {
-		return elem.currentStyle ? elem.currentStyle : window.getComputedStyle(elem, null);
+		return elem.currentStyle ? elem.currentStyle : window.getComputedStyle(elem, null);
 	}
 
-	container[emile] = function(elem, style, opts) {
+	function emile(elem, style, opts) {
 		elem = getElement(elem);
 		opts = opts || {};
 
@@ -128,18 +128,21 @@
 				else elem.style[prop] = curValue;
 			}
 			if(time > finish) {
-				container[emile].stopAnimation(elem);
+				stopAnimation(elem);
 				opts.after && opts.after();
 			}
 		}, 10);
 	}
 
-	container[emile].stopAnimation = function(elem) {
+	function stopAnimation(elem) {
 		elem = getElement(elem);
 		if (elem.emile) {
 			clearInterval(elem.emile);
 			elem.emile = null;
 		}
 	}
+
+	container[functionName] = emile;
+	container[functionName].stopAnimation = stopAnimation;
 
 })('emile', this);
