@@ -18,6 +18,13 @@
 		'maxWidth minHeight minWidth opacity outlineColor outlineOffset outlineWidth paddingBottom paddingLeft '+
 		'paddingRight paddingTop right textIndent top width wordSpacing zIndex').split(' ');
 
+	function getElement(elem) { return typeof elem == 'string' ? document.getElementById(elem) : elem; }
+
+	var computedStyle = function(elem) { return elem.currentStyle; }
+
+	if (document.defaultView && typeof document.defaultView.getComputedStyle !== 'undefined')
+		computedStyle = function(elem) { return document.defaultView.getComputedStyle(elem, null); }
+
 	// opacity support
 	var reOpacity = /alpha\s*\(\s*opacity\s*=\s*([^\)]+)\)/;
 	var setOpacity = function(elem, value) { elem.style.opacity = value; };
@@ -52,17 +59,16 @@
 
 	//determines color value according to position
 	function interpolateColor(source, target, position) {
-		var	i=3,
+		var i=3,
 			tmp,
 			values = [];
 
 		source = parseColor(source);
 		target = parseColor(target);
 
-		//interpolate and validate each value
 		while(i--) {
 			tmp = ~~(source[i] + (target[i] - source[i]) * position);
-			values.push(tmp < 0 ? 0 : tmp > 255 ? 255 : tmp);
+			values.push(tmp < 0 ? 0 : tmp > 255 ? 255 : tmp); //validate each value
 		}
 
 		return 'rgb(' + values.join(',') + ')';
@@ -79,7 +85,7 @@
 			return { value: p, func: interpolateNumber, unit: q };
 	}
 
-	//parse color values to array
+	//parse color to array holding each basic color independently in decimal number
 	function parseColor(color) {
 		var values = [],
 			j = 3;
@@ -109,22 +115,14 @@
 		var css,
 			rules = {},
 			i = props.length,
-			v;
+			value;
 
 		parseElem.innerHTML = '<div style="' + style + '"></div>';
 		css = parseElem.childNodes[0].style;
 		while(i--)
-			if(v = css[props[i]]) rules[props[i]] = parse(v);
+			if(value = css[props[i]]) rules[props[i]] = parse(value);
 
 		return rules;
-	}
-
-	function getElement(elem) {
-		return typeof elem == 'string' ? document.getElementById(elem) : elem;
-	}
-
-	function computedStyle(elem) {
-		return elem.currentStyle ? elem.currentStyle : window.getComputedStyle(elem, null);
 	}
 
 	function emile(elem, style, opts) {
@@ -144,10 +142,10 @@
 
 		//parse css properties
 		for(prop in target) {
-			if (prop === 'opacity')
-				current[prop] = parse(getOpacity(comp));
-			else
+			if (prop !== 'opacity')
 				current[prop] = parse(comp[prop]);
+			else
+				current[prop] = parse(getOpacity(comp));
 		}
 
 		//stop previous animation
