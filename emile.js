@@ -3,7 +3,16 @@
 
 (function(functionName, container) {
 
-	var parseEl = document.createElement('div');
+	//defaults
+	var defaultDuration = 400;
+
+	function defaultEase(pos) {
+		return (-Math.cos(pos * Math.PI) / 2) + 0.5;
+	}
+
+	var mark = "emile" + (new Date).getTime();
+
+	var parseElem = document.createElement('div');
 	var props = ('backgroundColor borderBottomColor borderBottomWidth borderLeftColor borderLeftWidth '+
 		'borderRightColor borderRightWidth borderSpacing borderTopColor borderTopWidth bottom color fontSize '+
 		'fontWeight height left letterSpacing lineHeight marginBottom marginLeft marginRight marginTop maxHeight '+
@@ -15,11 +24,11 @@
 	var setOpacity = function() {};
 	var getOpacityFromComputed = function() { return '1'; };
 
-	if (typeof parseEl.style.opacity == 'string') {
+	if (typeof parseElem.style.opacity == 'string') {
 		setOpacity = function(elem, value){ elem.style.opacity = value; };
 		getOpacityFromComputed = function(computed) { return computed.opacity; };
 	}
-	else if (typeof parseEl.style.filter == 'string') {
+	else if (typeof parseElem.style.filter == 'string') {
 		setOpacity = function(elem, value) {
 			var es = elem.style;
 			if (elem.currentStyle && !elem.currentStyle.hasLayout) es.zoom = 1;
@@ -81,8 +90,8 @@
 
 	function normalize(style) {
 		var css, rules = {}, i = props.length, v;
-		parseEl.innerHTML = '<div style="'+style+'"></div>';
-		css = parseEl.childNodes[0].style;
+		parseElem.innerHTML = '<div style="'+style+'"></div>';
+		css = parseElem.childNodes[0].style;
 		while(i--)
 			if(v = css[props[i]]) rules[props[i]] = parse(v);
 		return rules;
@@ -105,20 +114,20 @@
 		prop,
 		current = {},
 		start = +new Date,
-		dur = opts.duration || 400,
+		dur = opts.duration || defaultDuration,
 		finish = start + dur,
 		interval,
-		easing = opts.easing || function(pos) { return (-Math.cos(pos * Math.PI) / 2) + 0.5; },
+		easing = opts.easing || defaultEase,
 		curValue;
 
 		for(prop in target)
 			current[prop] = parse(prop === 'opacity' ? getOpacityFromComputed(comp) : comp[prop]);
 
 		//stop previous animation
-		if (elem.emile)
-			clearInterval(elem.emile);
+		if (elem[mark])
+			clearInterval(elem[mark]);
 
-		elem.emile = interval = setInterval(function() {
+		elem[mark] = interval = setInterval(function() {
 			var time = +new Date,
 			pos = time > finish ? 1 : (time - start) / dur;
 
@@ -136,9 +145,9 @@
 
 	function stopAnimation(elem) {
 		elem = getElement(elem);
-		if (elem.emile) {
-			clearInterval(elem.emile);
-			elem.emile = null;
+		if (elem[mark]) {
+			clearInterval(elem[mark]);
+			elem[mark] = null;
 		}
 	}
 
