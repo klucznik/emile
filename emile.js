@@ -3,12 +3,12 @@
 
 (function(functionName, container) {
 
-	//defaults
+	// defaults
 	var defaultDuration = 400;
 
 	function defaultEase(position) { return (-Math.cos(position * Math.PI) / 2) + 0.5; }
 
-	//generate unique string to mark currently animated elements
+	// generate unique string to mark currently animated elements
 	var mark = "emile" + (new Date).getTime();
 
 	var parseElem = document.createElement('div');
@@ -30,7 +30,7 @@
 	var setOpacity = function(elem, value) { elem.style.opacity = value; };
 	var getOpacity = function(comp) { return comp.opacity; };
 
-	//support opacity for ie6 and 7 (ie8 supports normal opacity)
+	// support opacity for ie6 and 7 (ie8 supports normal opacity)
 	if (typeof parseElem.style.filter == 'string' && typeof parseElem.style.opacity != 'string') {
 		setOpacity = function(elem, value) {
 			var es = elem.style;
@@ -51,13 +51,13 @@
 
 	function letterAt(str, index) { return str.substr(index, 1); }
 
-	//determines numerical value according to position (0 means begining and 1 end of animation)
+	// determines numerical value according to position (0 means begining and 1 end of animation)
 	function interpolateNumber(source, target, position) {
 		var objToReturn = source + (target - source) * position;
 		return isNaN(objToReturn) ? objToReturn : objToReturn.toFixed(3);
 	}
 
-	//determines color value according to position
+	// determines color value according to position
 	function interpolateColor(source, target, position) {
 		var i=3,
 			tmp,
@@ -67,14 +67,15 @@
 		target = parseColor(target);
 
 		while(i--) {
+			// ~~ is faster version od Math.floor, also converts to integer
 			tmp = ~~(source[i] + (target[i] - source[i]) * position);
-			values.push(tmp < 0 ? 0 : tmp > 255 ? 255 : tmp); //validate each value
+			values.push(tmp < 0 ? 0 : tmp > 255 ? 255 : tmp); // validate each value
 		}
 
 		return 'rgb(' + values.join(',') + ')';
 	}
 
-	//this function decides if property is numerical or color based
+	// this function decides if property is numerical or color based
 	function parse(prop) {
 		var p = parseFloat(prop);
 		var q = prop.replace(/^[\-\d\.]+/,'');
@@ -85,24 +86,24 @@
 			return { value: p, func: interpolateNumber, unit: q };
 	}
 
-	//parse color to array holding each basic color independently in decimal number
+	// parse color to array holding each basic color independently in decimal number
 	function parseColor(color) {
 		var values = [],
 			j = 3;
 
-		//rgb format
+		// rgb format
 		if(letterAt(color,0) == 'r') {
 			color = color.match(/\d+/g);
 			while(j--)
 				values.push(~~color[j]);
 		}
-		//hex format
+		// hex format
 		else {
-			//if needed expand short hex (#FFF -> #FFFFFF)
+			// if needed expand short hex (#FFF -> #FFFFFF)
 			if(color.length == 4)
 				color = '#' + letterAt(color,1) + letterAt(color,1) + letterAt(color,2) + letterAt(color,2) + letterAt(color,3) + letterAt(color,3);
 
-			//convert hexadecimal to decimal values
+			// convert hexadecimal to decimal values
 			while(j--)
 				values.push(parseInt(color.substr(1 + j*2, 2), 16));
 		}
@@ -110,7 +111,7 @@
 		return values;
 	}
 
-	//parses given css style string to js equivalents using browser engine
+	// parses given css style string to js equivalents using browser engine
 	function normalize(style) {
 		var css,
 			rules = {},
@@ -135,12 +136,12 @@
 			current = {},
 			start = +new Date,
 			dur = opts.duration || defaultDuration,
+			easing = opts.easing || defaultEase,
 			finish = start + dur,
 			interval,
-			easing = opts.easing || defaultEase,
 			curValue;
 
-		//parse css properties
+		// parse css properties
 		for(prop in target) {
 			if (prop !== 'opacity')
 				current[prop] = parse(comp[prop]);
@@ -148,16 +149,16 @@
 				current[prop] = parse(getOpacity(comp));
 		}
 
-		//stop previous animation
+		// stop previous animation
 		if (elem[mark])
 			clearInterval(elem[mark]);
 
-		//mark element as being animated and start main animation loop
+		// mark element as being animated and start main animation loop
 		elem[mark] = interval = setInterval(function() {
 			var time = +new Date;
 			var position = (time > finish) ? 1 : (time - start) / dur;
 
-			//update element values
+			// update element values
 			for(prop in target) {
 				curValue = target[prop].func(current[prop].value, target[prop].value, easing(position)) + target[prop].unit;
 				if (prop === 'opacity')
@@ -166,7 +167,7 @@
 					elem.style[prop] = curValue;
 			}
 
-			//check for animation end
+			// check for animation end
 			if(time > finish) {
 				stopAnimation(elem);
 				opts.after && opts.after();
@@ -182,7 +183,7 @@
 		}
 	}
 
-	//declare externs
+	// declare externs
 	container[functionName] = emile;
 	container[functionName].stopAnimation = stopAnimation;
 
