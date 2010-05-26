@@ -135,7 +135,7 @@
 			prop,
 			current = {},
 			start = +new Date,
-			dur = opts.duration || defaultDuration,
+			dur = isNaN(opts.duration) ? defaultDuration : opts.duration,
 			easing = opts.easing || defaultEase,
 			finish = start + dur,
 			interval,
