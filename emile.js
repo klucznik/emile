@@ -67,7 +67,7 @@
 		target = parseColor(target);
 
 		while(i--) {
-			// ~~ is faster version od Math.floor, also converts to integer
+			// ~~ is faster version of Math.floor, also converts to integer
 			tmp = ~~(source[i] + (target[i] - source[i]) * position);
 			values.push(tmp < 0 ? 0 : tmp > 255 ? 255 : tmp); // validate each value
 		}
@@ -120,8 +120,10 @@
 
 		parseElem.innerHTML = '<div style="' + style + '"></div>';
 		css = parseElem.childNodes[0].style;
-		while(i--)
-			if(value = css[props[i]]) rules[props[i]] = parse(value);
+		while(i--) {
+			if(value = css[props[i]])
+				rules[props[i]] = parse(value);
+		}
 
 		return rules;
 	}
