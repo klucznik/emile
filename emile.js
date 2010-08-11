@@ -66,7 +66,7 @@
 		source = parseColor(source);
 		target = parseColor(target);
 
-		while(i--) {
+		while (i--) {
 			// ~~ is faster version of Math.floor, also converts to integer
 			tmp = ~~(source[i] + (target[i] - source[i]) * position);
 			values.push(tmp < 0 ? 0 : tmp > 255 ? 255 : tmp); // validate each value
@@ -92,7 +92,7 @@
 			j = 3;
 
 		// rgb format
-		if(letterAt(color,0) == 'r') {
+		if (letterAt(color,0) == 'r') {
 			color = color.match(/\d+/g);
 			while(j--)
 				values.push(~~color[j]);
@@ -100,7 +100,7 @@
 		// hex format
 		else {
 			// if needed expand short hex (#FFF -> #FFFFFF)
-			if(color.length == 4)
+			if (color.length == 4)
 				color = '#' + letterAt(color,1) + letterAt(color,1) + letterAt(color,2) + letterAt(color,2) + letterAt(color,3) + letterAt(color,3);
 
 			// convert hexadecimal to decimal values
@@ -120,8 +120,8 @@
 
 		parseElem.innerHTML = '<div style="' + style + '"></div>';
 		css = parseElem.childNodes[0].style;
-		while(i--) {
-			if(value = css[props[i]])
+		while (i--) {
+			if (value = css[props[i]])
 				rules[props[i]] = parse(value);
 		}
 
@@ -144,7 +144,7 @@
 			curValue;
 
 		// parse css properties
-		for(prop in target) {
+		for (prop in target) {
 			if (prop !== 'opacity')
 				current[prop] = parse(comp[prop]);
 			else
@@ -161,7 +161,7 @@
 			var position = (time > finish) ? 1 : (time - start) / dur;
 
 			// update element values
-			for(prop in target) {
+			for (prop in target) {
 				curValue = target[prop].func(current[prop].value, target[prop].value, easing(position)) + target[prop].unit;
 				if (prop === 'opacity')
 					setOpacity(elem, curValue);
@@ -170,7 +170,7 @@
 			}
 
 			// check for animation end
-			if(time > finish) {
+			if (time > finish) {
 				stopAnimation(elem);
 				opts.after && opts.after();
 			}
